@@ -42,7 +42,7 @@ export default function LoginPage() {
       if (error) throw error;
 
       // If login is successful, redirect to dashboard
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred during login"

@@ -50,7 +50,7 @@ export default function RegisterPage() {
 
       if (data.user) {
         // Registration successful
-        navigate("/login", {
+        navigate("/", {
           state: {
             message:
               "Registration successful. Please check your email to verify your account.",
