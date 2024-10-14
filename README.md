@@ -1,30 +1,11 @@
-# React + TypeScript + Vite
+# React + Vite + shadcn/ui + Supabase + Stripe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a fullstack project template that uses React, Vite, shadcn/ui, Supabase, and Stripe. The idea is that we wanted something fast to develop with that could be used to build a SaaS product. We want to use Vercel's v0 to quickly develop components and pages, hence the choice of shadcn/ui. However, we wanted to be able to deploy a super tiny and fast frontend, so we decided on Vite with React Router Dom for the frontend. All backend code will be developed in Deno and hosted on Supabase Functions, as will our database and authentication. We will use Stripe for payments, which will handle all of our billing and subscription management.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## TODO
+- [ ] Create payment page
+- [ ] Create subscription page
+- [ ] Create user page
+- [ ] database migrations for subscriptions and payments
+- [ ] Database migrations for user data (name, and other details. Use email as primary key)
+- [ ] Make payments work via Stripe
