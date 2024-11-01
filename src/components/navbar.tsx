@@ -22,7 +22,7 @@ export function Navbar() {
         <Link to="/">Home</Link>
       </Button>
       <Button variant="ghost" asChild>
-        <Link to="/products">Products</Link>
+        <Link to="/pricing">Pricing</Link>
       </Button>
       <Button variant="ghost" asChild>
         <Link to="/about">About</Link>

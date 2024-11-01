@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // deno-lint-ignore-file no-explicit-any
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
 
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import Stripe from "https://esm.sh/stripe@14.25.0";
+import { Stripe } from "https://esm.sh/stripe@14.25.0";
 import { stripe } from "./stripe/config.ts";
 import {
   deletePriceRecord,
@@ -40,13 +36,17 @@ Deno.serve(async (req) => {
 
   try {
     if (!sig || !webhookSecret) {
-      return new Response("Webhook secret not found.", { status: 400 });
+      return Response.json({ error: "Webhook secret not found." }, {
+        status: 500,
+      });
     }
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     console.log(`🔔  Webhook received: ${event.type}`);
   } catch (err: any) {
-    console.log(`❌ Error message: ${err.message}`);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+    console.error(`❌ Error message: ${err.message}`);
+    return Response.json({ error: `Webhook Error: ${err.message}` }, {
+      status: 400,
+    });
   }
 
   if (relevantEvents.has(event.type)) {
@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
           break;
         case "customer.subscription.created":
         case "customer.subscription.updated":
-        case "customer.subscription.deleted":
+        case "customer.subscription.deleted": {
           const subscription = event.data.object as Stripe.Subscription;
           await manageSubscriptionStatusChange(
             subscription.id,
@@ -76,7 +76,8 @@ Deno.serve(async (req) => {
             event.type === "customer.subscription.created",
           );
           break;
-        case "checkout.session.completed":
+        }
+        case "checkout.session.completed": {
           const checkoutSession = event.data.object as Stripe.Checkout.Session;
           if (checkoutSession.mode === "subscription") {
             const subscriptionId = checkoutSession.subscription;
@@ -87,34 +88,23 @@ Deno.serve(async (req) => {
             );
           }
           break;
+        }
         default:
           throw new Error("Unhandled relevant event!");
       }
     } catch (error) {
-      console.log(error);
-      return new Response(
-        "Webhook handler failed. View your Next.js function logs.",
-        {
-          status: 400,
-        },
-      );
+      console.error(error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return Response.json({ error: `Error processing webhook: ${message}` }, {
+        status: 400,
+      });
     }
   } else {
-    return new Response(`Unsupported event type: ${event.type}`, {
+    console.warn(`🟠 Ignoring event: ${event.type}`);
+    return Response.json({ error: `Unsupported event type: ${event.type}` }, {
       status: 400,
     });
   }
-  return new Response(JSON.stringify({ received: true }));
+
+  return Response.json({ received: true });
 });
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/stripe_webhook' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
