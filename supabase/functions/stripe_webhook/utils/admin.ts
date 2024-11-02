@@ -235,6 +235,7 @@ const manageSubscriptionStatusChange = async (
   createAction = false,
 ) => {
   // Get customer's UUID from mapping table.
+  // eslint-disable-next-line prefer-const
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from("customers")
     .select("id")
@@ -242,7 +243,9 @@ const manageSubscriptionStatusChange = async (
     .single();
 
   if (noCustomerError) {
-    throw new Error(`Customer lookup failed: ${noCustomerError.message}`);
+    throw new Error(
+      `Customer lookup failed: ${noCustomerError.message}`,
+    );
   }
 
   const { id: uuid } = customerData!;
@@ -257,8 +260,7 @@ const manageSubscriptionStatusChange = async (
     metadata: subscription.metadata,
     status: subscription.status,
     price_id: subscription.items.data[0].price.id,
-    //TODO check quantity on subscription
-    quantity: subscription.quantity,
+
     cancel_at_period_end: subscription.cancel_at_period_end,
     cancel_at: subscription.cancel_at
       ? toDateTime(subscription.cancel_at).toISOString()
