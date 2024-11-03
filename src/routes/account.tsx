@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import {
@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUser } from "@/hooks/use-user";
 import { useSupabase } from "@/hooks/use-supabase";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type UserData = {
   username?: string;
@@ -180,6 +181,7 @@ export default function AccountPage() {
             </Button>
           </div>
         </div>
+        <ThemeToggle />
         <div className="space-y-2">
           <Label htmlFor="display-name">Display Name</Label>
           <Input

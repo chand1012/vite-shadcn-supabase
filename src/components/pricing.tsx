@@ -179,16 +179,16 @@ export function PricingSection() {
   };
 
   return (
-    <section className="container mx-auto py-12">
+    <section className="w-full flex flex-col items-center justify-center py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
       <h2 className="text-3xl font-bold text-center mb-6">Choose Your Plan</h2>
       <p className="text-xl text-center text-muted-foreground mb-8">
         Select the perfect plan for your needs. Upgrade or downgrade at any
         time.
       </p>
-      <div className="flex items-center justify-center mb-8">
+      <div className="flex items-center justify-center mb-8 dark:bg-background p-4 rounded-lg shadow-md">
         <span
           className={`mr-2 ${
-            isYearly ? "text-muted-foreground" : "font-semibold"
+        isYearly ? "text-muted-foreground" : "font-semibold"
           }`}
         >
           Monthly
@@ -200,7 +200,7 @@ export function PricingSection() {
         />
         <span
           className={`ml-2 ${
-            isYearly ? "font-semibold" : "text-muted-foreground"
+        isYearly ? "font-semibold" : "text-muted-foreground"
           }`}
         >
           Yearly
