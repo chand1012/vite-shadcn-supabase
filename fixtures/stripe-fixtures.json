@@ -20,6 +20,7 @@
       "path": "/v1/prices",
       "method": "post",
       "params": {
+        "nickname": "Monthly",
         "product": "${prod_hobby:id}",
         "currency": "usd",
         "billing_scheme": "per_unit",
@@ -35,6 +36,7 @@
       "path": "/v1/prices",
       "method": "post",
       "params": {
+        "nickname": "Yearly",
         "product": "${prod_hobby:id}",
         "currency": "usd",
         "billing_scheme": "per_unit",
@@ -62,6 +64,7 @@
       "path": "/v1/prices",
       "method": "post",
       "params": {
+        "nickname": "Monthly",
         "product": "${prod_freelancer:id}",
         "currency": "usd",
         "billing_scheme": "per_unit",
@@ -77,6 +80,7 @@
       "path": "/v1/prices",
       "method": "post",
       "params": {
+        "nickname": "Yearly",
         "product": "${prod_freelancer:id}",
         "currency": "usd",
         "billing_scheme": "per_unit",

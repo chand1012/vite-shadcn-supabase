@@ -127,33 +127,41 @@ export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
   // if the pricing data is present, separate into monthly and yearly plans
-  const monthly: Plan[] | undefined = pricing?.data.map((product: Product) => {
-    const monthlyPrice = product.prices.find(
-      (price: Price) => price.name === "Monthly"
-    )!;
-    return {
-      name: product.name,
-      price: monthlyPrice?.amount / 100,
-      yearly: false,
-      price_id: monthlyPrice.id,
-      description: product.description,
-      features: planFeatures[product.name.toLowerCase()],
-    } as Plan;
-  });
+  interface PricingData {
+    data: Product[];
+  }
 
-  const yearly: Plan[] | undefined = pricing?.data.map((product: Product) => {
-    const yearlyPrice = product.prices.find(
-      (price: Price) => price.name === "Yearly"
-    )!;
-    return {
-      name: product.name,
-      yearly: true,
-      description: product.description,
-      price_id: yearlyPrice.id,
-      price: yearlyPrice?.amount / 100,
-      features: planFeatures[product.name.toLowerCase()],
-    };
-  });
+  const monthly: Plan[] | undefined = (pricing as PricingData)?.data
+    .map((product: Product): Plan => {
+      const monthlyPrice = product.prices.find(
+        (price: Price) => price.name === "Monthly"
+      )!;
+      return {
+        name: product.name,
+        price: monthlyPrice?.amount / 100,
+        yearly: false,
+        price_id: monthlyPrice.id,
+        description: product.description,
+        features: planFeatures[product.name.toLowerCase()],
+      };
+    })
+    .sort((a, b) => a.price - b.price);
+
+  const yearly: Plan[] | undefined = (pricing as PricingData)?.data
+    .map((product: Product): Plan => {
+      const yearlyPrice = product.prices.find(
+        (price: Price) => price.name === "Yearly"
+      )!;
+      return {
+        name: product.name,
+        yearly: true,
+        description: product.description,
+        price_id: yearlyPrice.id,
+        price: yearlyPrice?.amount / 100,
+        features: planFeatures[product.name.toLowerCase()],
+      };
+    })
+    .sort((a, b) => a.price - b.price);
 
   const handleStripeCheckout = async (price: string) => {
     // if they are not logged in, redirect to login
@@ -188,7 +196,7 @@ export function PricingSection() {
       <div className="flex items-center justify-center mb-8 dark:bg-background p-4 rounded-lg shadow-md">
         <span
           className={`mr-2 ${
-        isYearly ? "text-muted-foreground" : "font-semibold"
+            isYearly ? "text-muted-foreground" : "font-semibold"
           }`}
         >
           Monthly
@@ -200,7 +208,7 @@ export function PricingSection() {
         />
         <span
           className={`ml-2 ${
-        isYearly ? "font-semibold" : "text-muted-foreground"
+            isYearly ? "font-semibold" : "text-muted-foreground"
           }`}
         >
           Yearly

@@ -62,18 +62,21 @@ stripe fixtures fixtures/stripe-fixtures.json
 
 You should see two new products on your [products page](https://dashboard.stripe.com/test/products?active=true): Freelancer and Hobby.
 
-From these fixtures, you'll need your product IDs and Stripe secret key, which should be gathered from the [Stripe Dashboard](https://dashboard.stripe.com/) (if there's a way to do this via the CLI, please let me know or submit a PR). You can get your testing secret key [here](https://dashboard.stripe.com/test/apikeys). Copy it to your `supabase/.env` file. You can get your product IDs by running the following command.
+From these fixtures, you'll need your product IDs and Stripe secret key, which should be gathered from the [Stripe Dashboard](https://dashboard.stripe.com/) (if there's a way to do this via the CLI, please let me know or submit a PR). You can get your testing secret key [here](https://dashboard.stripe.com/test/apikeys). Copy it to your `supabase/.env` file. While you're in the dashboard, make sure you have the Customer Billing Portal set up, which you can do [here](https://dashboard.stripe.com/test/settings/billing/portal).
+
+You can get your product IDs by running the following command.
 
 ```bash
-stripe products list
+# if you don't have jq installed, you can simply run the command before the pipe to see the raw output
+stripe products list | jq -r '.data[].id'
 ```
 
-Copy the product IDs for the Hobby and Freelancer products. You'll want to copy all product IDs into the environment variables file found at `supabase/.env` under the name `PRODUCTS`. Here is an example of what it should look like.
+Copy the product IDs for the Hobby and Freelancer products (they should be the top two if you just created them). You'll want to copy all product IDs into the environment variables file found at `supabase/.env` under the name `PRODUCTS`. Here is an example of what it should look like.
 ```
 PRODUCTS=prod_1234567890,prod_1234567890 # there should only be two for now
 ```
 
-The application will use these product IDs to dynamically get prices, names, and descriptions for the products.
+The application will use these product IDs to dynamically get prices, names, and descriptions for the products. This is done so that if you have multiple SaaS products on a single account you can make sure that the correct products are being used for the correct application.
 
 Once this is done, we'll need your webhook signing secret. The easiest way to get this is to run the task `stripe-webhook` and copy the output key. Here's an example of what that output would look like.
 ```bash
@@ -82,7 +85,7 @@ $ deno task stripe-webhook
 > Ready! You are using Stripe API Version [2022-11-15]. Your webhook signing secret is whsec_thisisalongsecretkey56 (^C to quit)
 ```
 
-Copy the webhook signing secret to the `supabase/.env` file under the name `STRIPE_WEBHOOK_SECRET`.
+Copy the webhook signing secret to the `supabase/.env` file under the name `STRIPE_WEBHOOK_SECRET`. After you can kill the process with `ctrl+c`.
 
 ## 4. Start The Development Server
 
@@ -102,6 +105,8 @@ deno task serve
 # Terminal 3
 deno task stripe-webhook
 ```
+
+The development server should now be running at [`http://localhost:5173`](http://localhost:5173). You can view the Supabase dashboard at [`http://localhost:54321`](http://localhost:54321).
 
 ## 5. Tearing Down 
 When you are finished development, you can simply `ctrl+c` out of the processes for both Overmind and the separate terminals. Once that is complete you can simply run the following to tear down the Supabase instance.
