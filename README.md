@@ -4,8 +4,8 @@ This is a fullstack project template that uses React, Vite, shadcn/ui, Supabase,
 
 ## TODO
 - [x] Create payment page
-- [ ] Create user page
-- [ ] add link to manage subscriptions on stripe on the user page
+- [x] Create user page
+- [x] add link to manage subscriptions on stripe on the user page
 - [x] database migrations for subscriptions and payments
 - [x] Database migrations for user data (name, and other details. Use email as primary key)
 - [x] Make payments work via Stripe
