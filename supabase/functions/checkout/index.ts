@@ -4,7 +4,7 @@ import Stripe from "npm:stripe";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 import headers from "../_shared/headers.ts";
-import { Database } from "../_shared/database.types.ts";
+import type { Database } from "../_shared/database.types.ts";
 type CheckoutRequest = {
   price?: string;
 };

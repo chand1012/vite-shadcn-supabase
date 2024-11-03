@@ -12,6 +12,7 @@
     "serve": "supabase functions serve --env-file=supabase/.env"
   },
   "dependencies": {
+    "@mantine/hooks": "^7.13.4",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -19,11 +20,13 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
     "@supabase/supabase-js": "^2.45.4",
+    "@types/md5": "^2.3.5",
     "@types/node": "^22.7.5",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.452.0",
+    "md5": "^2.3.0",
     "postcss": "^8.4.47",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,7 +34,8 @@
     "swr": "^2.2.5",
     "tailwind-merge": "^2.5.3",
     "tailwindcss": "^3.4.13",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-async-effect": "^2.2.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

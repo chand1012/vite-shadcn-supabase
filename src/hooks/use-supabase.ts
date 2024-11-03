@@ -1,12 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
+import type { Database } from '@/types/database'
 
 // get from VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 export const useSupabase = () => {
-  const [supabase] = useState(() => createClient(supabaseUrl, supabaseAnonKey))
+  const [supabase] = useState(() => createClient<Database>(supabaseUrl, supabaseAnonKey))
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
