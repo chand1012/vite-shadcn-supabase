@@ -11,20 +11,20 @@ This is a fullstack project template that uses Deno, React, Vite, shadcn/ui, Sup
 - Entire built app is less than 150KB compressed and can be hosted on Vercel, Cloudflare Pages, and more!
 
 ### Why Vite and React Router Dom over NextJS?
-NextJS has become a bit of a beast. Its massive, the app router has lots of slowdowns and memory problems when in development, and Turbopack only recently entered 1.0. Vite is much faster in both development and production, significantly decreasing the footprint of the deployed app. React Router Dom is a mature and well supported library, while also being compact and staying out of the way, so we don't have to worry about massive development overhead. Since the backend and frontend are separate, the frontend can be deployed to a super fast CDN like Cloudflare Pages or GitHub Pages, while the backend lives Supabase.
+NextJS has become a bit of a beast. Its massive, the app router has lots of slowdowns and memory problems when in development, and Turbopack only recently entered 1.0. Vite is much faster in both development and production, significantly decreasing the footprint of the deployed app. React Router Dom is a mature and well supported library, while also being compact and staying out of the way, so we don't have to worry about massive development overhead. Since the backend and frontend are separate, the frontend can be deployed to a super fast CDN like Cloudflare Pages or GitHub Pages, while the backend lives on Supabase.
 
 ### Why Supabase?
 Supabase was the best option for a backend as they handled the database, the CRUD operations, user authentication, and serverless backend functions, while keeping all four elements tightly integrated. This doesn't mean you're vendor locked either - Supabase has a [self hosted option](https://supabase.com/docs/guides/self-hosting) if you don't want to use their cloud service.
 
-# Prerequisites
+# Quick Start
+
+## Prerequisites
 - [Deno 2.0](https://deno.com/)
 - [Docker](https://www.docker.com/)
 - [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started)
 - [Stripe CLI](https://stripe.com/docs/stripe-cli)
 - [Stripe Account](https://stripe.com/)
 - [Overmind](https://github.com/DarthSim/overmind) (optional but recommended).
-
-# Quick Start
 
 ## 0. Use the template.
 
@@ -40,31 +40,49 @@ cd your-repo
 ## 2. Project Setup
 
 ```bash
-cp .env.example .env
+cp .env.local.example .env.local
 cp supabase/.env.example supabase/.env
 deno install
-supabase start # get your supabase url and anon key and put it in .env.local file
-stripe login # login to stripe for CLI use
+supabase start # get your supabase api url and anon key and put it in .env.local file
+stripe login # if you haven't already
+```
+Your Supabase Anon Key and API URL will be part of the output of the `supabase start` command. You'll want to copy these into the `.env.local` file. Here is an example of what it should look like. For local development, the Supabase API URL will almost always be `http://127.0.0.1:54321`.
+```
+VITE_SUPABASE_URL=http://127.0.0.1:54321
+VITE_SUPABASE_ANON_KEY=eyJ...more text here...lYTn_I0
 ```
 
-## 3. Product Setup
+## 3. Stripe Setup
 
-Before we can continue development, we should set up products in Stripe. This can be done either via the Stripe dashboard, or manually via the Stripe CLI (recommended). Open the project in your preferred editor and start editing the stripe products file found in `fixtures/stripe-fixtures.json`. As this is a SaaS product, your products are broken down into products and prices for those products, which are monthly and yearly subscription prices. You can read more about the Stripe Fixtures [here](https://docs.stripe.com/cli/fixtures), but for now we can simple use the existing fixtures to create the products.
+Before we can continue development, we should set up products in Stripe. This can be done either via the Stripe dashboard, or manually via the Stripe CLI (recommended). Open the project in your preferred editor and start editing the stripe products file found in `fixtures/stripe-fixtures.json`. As this is a SaaS product, your products are broken down into products and prices for those products, which are monthly and yearly subscription prices. You can read more about the Stripe Fixtures [here](https://docs.stripe.com/cli/fixtures), but for now we can simply use the existing fixtures to create the products.
 
 ```bash
 stripe fixtures fixtures/stripe-fixtures.json
 ```
 
-From these fixtures, you'll need your product IDs and Stripe secret key, which should be gathered from the [Stripe Dashboard](https://dashboard.stripe.com/) (if there's a way to do this via the CLI, please let me know or submit a PR). You can get your testing secret key [here](https://dashboard.stripe.com/test/apikeys). You can get your product IDs from the product catalog page in the dashboard. Click on each product and copy the IDs by clicking on them. Here is an example of what that looks like.
+You should see two new products on your [products page](https://dashboard.stripe.com/test/products?active=true): Freelancer and Hobby.
 
-![Example Product](docs/example_product.png)
+From these fixtures, you'll need your product IDs and Stripe secret key, which should be gathered from the [Stripe Dashboard](https://dashboard.stripe.com/) (if there's a way to do this via the CLI, please let me know or submit a PR). You can get your testing secret key [here](https://dashboard.stripe.com/test/apikeys). Copy it to your `supabase/.env` file. You can get your product IDs by running the following command.
 
-You'll want to copy all product IDs into the environment variables file found at `supabase/.env` under the name `PRODUCTS`. Here is an example of what it should look like.
+```bash
+stripe products list
+```
+
+Copy the product IDs for the Hobby and Freelancer products. You'll want to copy all product IDs into the environment variables file found at `supabase/.env` under the name `PRODUCTS`. Here is an example of what it should look like.
 ```
 PRODUCTS=prod_1234567890,prod_1234567890 # there should only be two for now
 ```
 
 The application will use these product IDs to dynamically get prices, names, and descriptions for the products.
+
+Once this is done, we'll need your webhook signing secret. The easiest way to get this is to run the task `stripe-webhook` and copy the output key. Here's an example of what that output would look like.
+```bash
+$ deno task stripe-webhook
+# whsec_thisisalongsecretkey56 is what you should copy
+> Ready! You are using Stripe API Version [2022-11-15]. Your webhook signing secret is whsec_thisisalongsecretkey56 (^C to quit)
+```
+
+Copy the webhook signing secret to the `supabase/.env` file under the name `STRIPE_WEBHOOK_SECRET`.
 
 ## 4. Start The Development Server
 
@@ -100,5 +118,5 @@ supabase stop
 - [x] Database migrations for user data (name, and other details. Use email as primary key)
 - [x] Make payments work via Stripe
 - [x] make backend update for subscriptions
-- [ ] Add affiliate system
+- [ ] Add referral system
 - [ ] Create good documentation
