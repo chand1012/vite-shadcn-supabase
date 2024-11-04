@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import {
@@ -7,7 +7,6 @@ import {
   CreditCard,
 } from "lucide-react";
 import md5 from "md5";
-import { useDebouncedCallback } from "@mantine/hooks";
 import useAsyncEffect from "use-async-effect";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { useUser } from "@/hooks/use-user";
 import { useSupabase } from "@/hooks/use-supabase";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { IconDeviceFloppy } from "@tabler/icons-react";
 
 type UserData = {
   username?: string;
@@ -107,10 +107,7 @@ export default function AccountPage() {
         .single();
 
       if (subscriptionError) {
-        console.error(
-          "Error fetching subscription data:",
-          subscriptionError.message
-        );
+        setLoading(false);
         return;
       }
 
@@ -119,33 +116,11 @@ export default function AccountPage() {
     }
   }, [user]);
 
-  const handleUserDataDebounced = useDebouncedCallback(
-    async (data: UserData) => {
-      if (!user) return;
-      setLoading(true);
-      const { data: updatedData, error } = await supabase
-        .from("users")
-        .update(data)
-        .eq("id", user.id)
-        .select();
-
-      if (error) {
-        console.error("Error updating user data:", error.message);
-        setLoading(false);
-        return;
-      }
-      console.log("User data updated:", updatedData);
-      setLoading(false);
-    },
-    500
-  );
-
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({
       ...userData,
       full_name: event.target.value,
     });
-    handleUserDataDebounced(userData || ({} as UserData));
   };
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +128,24 @@ export default function AccountPage() {
       ...userData,
       username: event.target.value,
     });
-    handleUserDataDebounced(userData || ({} as UserData));
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    if (!user) return;
+    if (!userData) return;
+    const { data, error } = await supabase
+      .from("users")
+      .update(userData)
+      .eq("id", user.id)
+      .select();
+    if (error) {
+      console.error("Error updating user data:", error.message);
+      setLoading(false);
+      return;
+    }
+    console.log("User data updated:", data);
+    setLoading(false);
   };
 
   return (
@@ -199,6 +191,11 @@ export default function AccountPage() {
             value={userData?.full_name}
             onChange={handleNameChange}
           />
+        </div>
+        <div className="space-y-2">
+          <Button onClick={handleSave} className="w-full">
+            <IconDeviceFloppy className="w-4 h-4 mr-2" /> Save
+          </Button>
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
