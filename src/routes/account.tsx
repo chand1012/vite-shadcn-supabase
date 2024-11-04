@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import {
-  User,
-  // Upload,
-  CreditCard,
-} from "lucide-react";
+import { User, CreditCard } from "lucide-react";
 import md5 from "md5";
 import useAsyncEffect from "use-async-effect";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,10 +16,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useUser } from "@/hooks/use-user";
-import { useSupabase } from "@/hooks/use-supabase";
+import { useSupabase, useUser } from "@/hooks/use-supabase";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { IconDeviceFloppy } from "@tabler/icons-react";
+import { useClipboard } from "@mantine/hooks";
 
 type UserData = {
   username?: string;
@@ -35,6 +31,8 @@ export default function AccountPage() {
   const user = useUser();
   const supabase = useSupabase();
   const navigate = useNavigate();
+  const { copy, copied } = useClipboard({ timeout: 1000 });
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [subscription, setSubscription] = useState<string | null>(null);
@@ -85,33 +83,75 @@ export default function AccountPage() {
     setLoading(false);
   };
 
+  // TODO this runs 3-6 times on initial load
+  // it should run once and then only when the user changes
   useAsyncEffect(async () => {
     if (user) {
-      const { data: userData, error } = await supabase
-        .from("users")
-        .select("username, full_name, avatar_url")
-        .eq("id", user.id)
-        .single();
+      if (!userData) {
+        try {
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("username, full_name, avatar_url")
+            .eq("id", user.id)
+            .single();
 
-      if (error) {
-        console.error("Error fetching user data:", error.message);
-        return;
-      }
-      setUserData(userData as UserData);
-
-      // also get subscription status
-      const { data: subscription, error: subscriptionError } = await supabase
-        .from("subscriptions")
-        .select("status")
-        .eq("user_id", user.id)
-        .single();
-
-      if (subscriptionError) {
-        setLoading(false);
-        return;
+          if (error) {
+            throw new Error(error.message);
+          }
+          setUserData(userData as UserData);
+        } catch (e) {
+          console.error("Error fetching user data:", e);
+        }
       }
 
-      setSubscription(subscription?.status);
+      if (!subscription) {
+        try {
+          // also get subscription status
+          const { data: subscription, error: subscriptionError } =
+            await supabase
+              .from("subscriptions")
+              .select("status")
+              .eq("user_id", user.id)
+              .single();
+
+          if (subscriptionError) {
+            throw new Error(subscriptionError.message);
+          }
+
+          setSubscription(subscription?.status);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      if (!code) {
+        try {
+          const { data: referralData, error: referralError } = await supabase
+            .from("referral_codes")
+            .select("code")
+            .eq("user_id", user.id)
+            .single();
+
+          if (referralError) {
+            throw new Error(referralError.message);
+          }
+          setCode(referralData?.code);
+        } catch (e) {
+          console.error("Error fetching referral code:", e);
+          // generate a new referral code
+          const resp = await supabase.functions.invoke("gen_referral_code");
+          if (resp.error) {
+            console.error(
+              "Error generating referral code:",
+              resp.error.message
+            );
+            return;
+          }
+
+          setCode(resp.data?.code);
+        }
+      }
+
       setLoading(false);
     }
   }, [user]);
@@ -193,13 +233,27 @@ export default function AccountPage() {
           />
         </div>
         <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" value={user?.email} readOnly />
+        </div>
+        <div className="space-y-2">
           <Button onClick={handleSave} className="w-full">
             <IconDeviceFloppy className="w-4 h-4 mr-2" /> Save
           </Button>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={user?.email} readOnly />
+          <Label htmlFor="referral">Referral Code</Label>
+          <p className="text-sm text-muted-foreground">
+            Share this code with your friends to earn rewards! You'll get 3 days
+            of free hobby access for each friend who signs up, and they'll get
+            an extended free trial and 10% off their first month or year!
+          </p>
+        </div>
+        <div className="flex w-full items-center space-x-2">
+          <Input id="referral" value={code} readOnly />
+          <Button onClick={() => copy(code)}>
+            {copied ? "Code Copied!" : "Copy Code"}
+          </Button>
         </div>
       </CardContent>
       <CardFooter>

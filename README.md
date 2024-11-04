@@ -54,10 +54,10 @@ VITE_SUPABASE_ANON_KEY=eyJ...more text here...lYTn_I0
 
 ## 3. Stripe Setup
 
-Before we can continue development, we should set up products in Stripe. This can be done either via the Stripe dashboard, or manually via the Stripe CLI (recommended). Open the project in your preferred editor and start editing the stripe products file found in `fixtures/stripe-fixtures.json`. As this is a SaaS product, your products are broken down into products and prices for those products, which are monthly and yearly subscription prices. You can read more about the Stripe Fixtures [here](https://docs.stripe.com/cli/fixtures), but for now we can simply use the existing fixtures to create the products.
+Before we can continue development, we should set up products in Stripe. This can be done either via the Stripe dashboard, or manually via the Stripe CLI (recommended). Open the project in your preferred editor and start editing the stripe products file found in `fixtures/create-products.json`. As this is a SaaS product, your products are broken down into products and prices for those products, which are monthly and yearly subscription prices. You can read more about the Stripe Fixtures [here](https://docs.stripe.com/cli/fixtures), but for now we can simply use the existing fixtures to create the products.
 
 ```bash
-stripe fixtures fixtures/stripe-fixtures.json
+stripe fixtures fixtures/create-products.json
 ```
 
 You should see two new products on your [products page](https://dashboard.stripe.com/test/products?active=true): Freelancer and Hobby.

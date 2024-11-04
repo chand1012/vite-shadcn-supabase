@@ -7,8 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useSupabase } from "@/hooks/use-supabase";
-import { useUser } from "@/hooks/use-user";
+import { useSupabase, useUser } from "@/hooks/use-supabase";
 
 export default function DashboardPage() {
   const user = useUser();

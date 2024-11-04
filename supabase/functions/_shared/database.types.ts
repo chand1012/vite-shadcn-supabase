@@ -49,6 +49,56 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: number
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: number
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referral_redemptions: {
+        Row: {
+          created_at: string | null
+          id: number
+          redeemed_by: string
+          referral_code_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          redeemed_by: string
+          referral_code_id: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          redeemed_by?: string
+          referral_code_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_redemptions_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancel_at: string | null

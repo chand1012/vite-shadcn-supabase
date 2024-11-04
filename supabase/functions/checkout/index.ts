@@ -47,6 +47,16 @@ Deno.serve(async (req) => {
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  if (!user) {
+    return new Response(
+      JSON.stringify({ error: "User not found" }),
+      {
+        status: 404,
+        headers: { "Content-Type": "application/json", ...headers },
+      },
+    );
+  }
+
   // see if there's a corresponding customer in the database
   // if there is, use the customer's email to create the session
   // if not, create a new customer
@@ -140,6 +150,7 @@ Deno.serve(async (req) => {
     success_url: SUCCESS_REDIRECT_URL,
     cancel_url: CANCEL_REDIRECT_URL,
     automatic_tax: { enabled: false },
+    allow_promotion_codes: true,
     customer: customerData?.stripe_customer_id as string | undefined,
   });
 

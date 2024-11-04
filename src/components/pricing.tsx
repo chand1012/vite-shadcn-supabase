@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
-import { useUser } from "@/hooks/use-user";
-import { useSupabase } from "@/hooks/use-supabase";
+import { useSupabase, useUser } from "@/hooks/use-supabase";
 import usePricing from "@/hooks/use-pricing";
 
 interface Price {

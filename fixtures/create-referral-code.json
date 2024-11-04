@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "template_version": 0
+  },
+  "fixtures": [
+    {
+      "name": "coupon",
+      "path": "/v1/coupons",
+      "method": "post",
+      "params": {
+        "duration": "forever",
+        "percent_off": 10.0
+      }
+    },
+    {
+      "name": "set_coupon_name",
+      "path": "/v1/coupons${coupon:id}",
+      "method": "post",
+      "params": {
+        "name": "Referral"
+      }
+    }
+  ]
+}

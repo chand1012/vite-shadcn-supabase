@@ -2,8 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 // @ts-expect-error we don't care about types for this package
 import { HashLink } from "react-router-hash-link";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/hooks/use-user";
-import { useSupabase } from "@/hooks/use-supabase";
+import { useSupabase, useUser } from "@/hooks/use-supabase";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
